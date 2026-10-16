@@ -1,0 +1,86 @@
+<!doctype html>
+<html lang="pt-BR">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>COM2USB — Propriedades</title>
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+  <body>
+    <header>
+      <div id="dot" class="dot off"></div>
+      <div>
+        <h1>COM2USB <small style="font-size:11px;color:var(--muted)">v1.0.0</small></h1>
+        <p id="statusLine">Verificando porta serial…</p>
+      </div>
+      <button id="toggleBtn" class="primary">Ativar</button>
+    </header>
+
+    <main>
+      <section class="card">
+        <h2>Leitor de código de barras (serial-USB)</h2>
+        <div class="grid">
+          <label>Porta
+            <select id="porta"></select>
+          </label>
+          <label>Velocidade
+            <select id="velocidade">
+              <option>4800</option>
+              <option>9600</option>
+              <option>19200</option>
+              <option>38400</option>
+              <option>115200</option>
+            </select>
+          </label>
+          <label>Paridade
+            <select id="paridade">
+              <option value="sem">sem</option>
+              <option value="impar">ímpar</option>
+              <option value="par">par</option>
+            </select>
+          </label>
+          <label>Bits de dados
+            <select id="bitsDados">
+              <option>7</option>
+              <option>8</option>
+            </select>
+          </label>
+          <label>Bits de parada
+            <select id="stopsBits">
+              <option>1</option>
+              <option>2</option>
+            </select>
+          </label>
+        </div>
+        <div class="checks">
+          <label><input type="checkbox" id="gravar" /> Gravar leituras em COM2USB.rec</label>
+          <label><input type="checkbox" id="deduplicar" /> Marcar leitura repetida (2s) como DUP</label>
+          <label><input type="checkbox" id="autostart" /> Iniciar com o Windows</label>
+        </div>
+        <div class="actions">
+          <button id="saveBtn" class="primary">Salvar</button>
+          <span id="saveMsg" class="msg"></span>
+        </div>
+      </section>
+
+      <section class="card">
+        <h2>Últimas leituras</h2>
+        <table>
+          <thead>
+            <tr><th>Hora</th><th>Código</th><th></th></tr>
+          </thead>
+          <tbody id="readings">
+            <tr class="empty"><td colspan="3">Nenhuma leitura nesta sessão.</td></tr>
+          </tbody>
+        </table>
+      </section>
+    </main>
+
+    <footer style="padding:0 18px 14px;font-size:11px;color:var(--muted)">
+      COM2USB 1.0.0 · © 2026 PLUGGOR TECNOLOGIA LTDA · Licença GPL-3.0
+    </footer>
+
+    <div id="toast" class="toast"></div>
+    <script src="main.js"></script>
+  </body>
+</html>
