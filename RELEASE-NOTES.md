@@ -4,7 +4,7 @@ Recriação do SEALST em Tauri: leitor de código de barras em porta serial digi
 código no aplicativo em foco, morando na bandeja do sistema. GPL-3.0, PLUGGOR TECNOLOGIA LTDA.
 
 **Arquivo:** `COM2USB_1.0.0_setup.exe` (3,7 MB) — instalador NSIS para Windows 10/11 x64.
-SHA-256: `BB90FD9D071A2055D016A83CA8DB0664618E36E62B843C3D1DFD2CD5DF95E32C`
+SHA-256: `19EF764ACC346019F9EBA35D4FB9DAD4D53D71816E5841A55DD911522C6BBAE7`
 
 ## Instalar
 
