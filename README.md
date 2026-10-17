@@ -117,12 +117,37 @@ do Driver Store e conferido por SHA-256 — procedência e hashes em
 pacotes de driver**: mexer no Driver Store é operação destrutiva e fica a critério
 do operador (`pnputil /enum-drivers` / `pnputil /delete-driver oemNN.inf /uninstall`).
 
-## Onde baixar o build pronto
+## Baixar o build pronto
 
-Os instaladores compilados ficam publicados nas **Releases** deste repositório Git
-(tag `v1.0.0`). Baixe o `COM2USB_1.0.0_setup.exe` da release mais recente e instale —
-a tarefa de logon elevada já é criada pelo instalador, então o programa abre oculto
-no próximo logon sem nenhum prompt.
+Os binários compilados são anexos da **Release** deste repositório (nada de binário
+dentro da árvore do git). Link permanente para a release mais recente:
+
+| Arquivo | Para quem | Download direto |
+|---|---|---|
+| `COM2USB_1.0.0_setup.exe` (3.729.217 bytes) | instalação normal: programa + atalhos + chaves do Painel de Controle + tarefa de logon elevada, com a opção de driver CH340 **desmarcada** | <https://github.com/gorinformaticadev/com2usb/releases/latest/download/COM2USB_1.0.0_setup.exe> |
+| `COM2USB.exe` (6.685.184 bytes) | portable: um arquivo só, sem instalador, para quem quer só rodar | <https://github.com/gorinformaticadev/com2usb/releases/latest/download/COM2USB.exe> |
+
+Página da release (notas, data e histórico das versões):
+<https://github.com/gorinformaticadev/com2usb/releases/latest>.
+
+SHA-256 dos dois anexos de `v1.0.0`, para conferir depois de baixar:
+
+```
+19EF764ACC346019F9EBA35D4FB9DAD4D53D71816E5841A55DD911522C6BBAE7  COM2USB_1.0.0_setup.exe
+C0661119C1B9AD0670C952FB5C54714BE0C2EDF74D24E856B1660C7F3710385A  COM2USB.exe
+```
+
+```powershell
+Get-FileHash -Algorithm SHA256 .\COM2USB_1.0.0_setup.exe
+```
+
+O **portable** é o mesmo executável do instalador (manifesto `asInvoker`), então ele
+grava `COM2USB.INI`, `COM2USB.log` e `COM2USB.rec` **na pasta onde estiver**: escolha um
+lugar com permissão de escrita (a raiz de `C:\` e `Program Files` sem instalar não
+servem). Duas coisas que só o instalador faz: colocar o driver CH340, se você marcar a
+opção, e registrar a tarefa de logon elevada — no portable, marque **"Iniciar com o
+Windows"** na tela de Propriedades, que cria a tarefa apontando para o caminho desse
+arquivo (aí o Windows pede a confirmação do UAC uma vez).
 
 ## Estrutura do repositório
 
