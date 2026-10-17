@@ -17,6 +17,8 @@ pub struct AppConfig {
     pub ativo: bool,
     pub gravar: bool,
     pub deduplicar: bool,
+    pub digitar: bool,
+    pub enter: bool,
 }
 
 impl Default for AppConfig {
@@ -30,6 +32,8 @@ impl Default for AppConfig {
             ativo: false,
             gravar: true,
             deduplicar: true,
+            digitar: true,
+            enter: true,
         }
     }
 }
@@ -165,6 +169,8 @@ pub fn load_config() -> AppConfig {
         ativo: ini.int("Settings", "Ativo", 0) == 1,
         gravar: ini.boolean("Settings", "Gravar", true),
         deduplicar: ini.boolean("Settings", "Deduplicar", true),
+        digitar: ini.boolean("Settings", "Digitar", true),
+        enter: ini.boolean("Settings", "Enter", true),
     }
 }
 
@@ -180,6 +186,8 @@ pub fn save_config(cfg: &AppConfig) -> Result<(), String> {
     ini.set("Settings", "Ativo", if cfg.ativo { "1" } else { "0" });
     ini.set("Settings", "Gravar", if cfg.gravar { "1" } else { "0" });
     ini.set("Settings", "Deduplicar", if cfg.deduplicar { "1" } else { "0" });
+    ini.set("Settings", "Digitar", if cfg.digitar { "1" } else { "0" });
+    ini.set("Settings", "Enter", if cfg.enter { "1" } else { "0" });
     fs::write(&p, ini.to_text()).map_err(|e| format!("falha ao gravar COM2USB.INI: {}", e))
 }
 

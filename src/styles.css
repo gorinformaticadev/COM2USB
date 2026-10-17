@@ -73,9 +73,20 @@ td .dup {
   color: #d29922; border: 1px solid #d2992255; border-radius: 4px;
   font-size: 11px; padding: 1px 5px;
 }
-.toast {
-  position: fixed; bottom: 16px; right: 16px; max-width: 60%;
-  background: var(--err); color: #fff; padding: 10px 14px;
-  border-radius: 8px; font-size: 13px; display: none;
+.modal {
+  position: fixed; inset: 0; z-index: 50;
+  display: grid; place-items: center;
+  background: rgba(0, 0, 0, .6);
 }
-.toast.show { display: block; }
+.modal[hidden] { display: none; }
+.modal-box {
+  width: min(420px, calc(100% - 40px));
+  background: var(--card);
+  border: 1px solid var(--err);
+  border-radius: 10px;
+  padding: 16px 18px;
+  box-shadow: 0 12px 40px rgba(0, 0, 0, .55);
+}
+.modal-box h3 { margin: 0 0 8px; font-size: 14px; color: var(--err); }
+.modal-box p { margin: 0; font-size: 13px; line-height: 1.5; white-space: pre-line; }
+.modal-actions { display: flex; justify-content: flex-end; margin-top: 16px; }

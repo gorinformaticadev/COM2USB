@@ -3,13 +3,15 @@ const { listen } = window.__TAURI__.event;
 
 const $ = (id) => document.getElementById(id);
 
-function toast(msg) {
-  const t = $("toast");
-  t.textContent = msg;
-  t.classList.add("show");
-  clearTimeout(t._h);
-  t._h = setTimeout(() => t.classList.remove("show"), 5000);
+function alertModal(msg) {
+  $("modalMsg").textContent = msg;
+  $("modal").hidden = false;
+  $("modalOk").focus();
 }
+
+$("modalOk").addEventListener("click", () => {
+  $("modal").hidden = true;
+});
 
 function renderStatus(s) {
   const dot = $("dot");
@@ -26,13 +28,14 @@ async function refreshStatus() {
   try {
     renderStatus(await invoke("get_status"));
   } catch (e) {
-    toast(String(e));
+    alertModal(String(e));
   }
 }
 
-async function loadPorts(current) {
+async function loadPorts(desejada) {
   const ports = await invoke("list_ports");
   const sel = $("porta");
+  const atual = desejada ?? sel.value;
   sel.innerHTML = "";
   for (const p of ports) {
     const o = document.createElement("option");
@@ -40,15 +43,18 @@ async function loadPorts(current) {
     o.textContent = p;
     sel.appendChild(o);
   }
-  sel.value = current;
-  if (sel.value !== current) {
+  if (atual && !ports.includes(atual)) {
     const o = document.createElement("option");
-    o.value = current;
-    o.textContent = `${current} (configurada, não detectada)`;
+    o.value = atual;
+    o.textContent = `${atual} (não detectada)`;
     sel.appendChild(o);
-    sel.value = current;
   }
+  sel.value = atual || ports[0] || "";
 }
+
+window.addEventListener("focus", () => {
+  loadPorts().catch(() => {});
+});
 
 function collectSettings() {
   return {
@@ -57,9 +63,11 @@ function collectSettings() {
     paridade: $("paridade").value,
     bitsDados: Number($("bitsDados").value),
     stopsBits: Number($("stopsBits").value),
-    ativo: null,
+    ativo: false,
     gravar: $("gravar").checked,
     deduplicar: $("deduplicar").checked,
+    digitar: $("digitar").checked,
+    enter: $("enter").checked,
   };
 }
 
@@ -68,21 +76,41 @@ $("toggleBtn").addEventListener("click", async () => {
   try {
     renderStatus(await invoke("set_active", { ativar: !running }));
   } catch (e) {
-    toast(String(e));
+    alertModal(String(e));
     await refreshStatus();
   }
 });
 
+let autostartSalvo = false;
+
 $("saveBtn").addEventListener("click", async () => {
   try {
-    const status = await invoke("save_settings", { settings: collectSettings() });
-    renderStatus(status);
-    const alOk = await invoke("set_autostart", { enabled: $("autostart").checked });
-    $("autostart").checked = alOk;
+    renderStatus(await invoke("save_settings", { settings: collectSettings() }));
     $("saveMsg").textContent = "Configurações salvas em COM2USB.INI.";
     setTimeout(() => ($("saveMsg").textContent = ""), 4000);
   } catch (e) {
-    toast(String(e));
+    alertModal(String(e));
+  }
+  if ($("autostart").checked === autostartSalvo) return;
+  try {
+    autostartSalvo = await invoke("set_autostart", { enabled: $("autostart").checked });
+  } catch (e) {
+    $("autostart").checked = autostartSalvo;
+    alertModal(String(e));
+  }
+});
+
+$("wedgeBtn").addEventListener("click", async () => {
+  const msg = $("saveMsg");
+  for (const s of ["3", "2", "1"]) {
+    msg.textContent = `Clique no documento de destino. Digitará em ${s}…`;
+    await new Promise((r) => setTimeout(r, 1000));
+  }
+  msg.textContent = "";
+  try {
+    await invoke("wedge_test", { texto: "1234567890" });
+  } catch (e) {
+    alertModal(String(e));
   }
 });
 
@@ -116,13 +144,16 @@ async function init() {
   $("stopsBits").value = String(cfg.stopsBits);
   $("gravar").checked = Boolean(cfg.gravar);
   $("deduplicar").checked = Boolean(cfg.deduplicar);
-  $("autostart").checked = await invoke("get_autostart");
+  $("digitar").checked = Boolean(cfg.digitar);
+  $("enter").checked = Boolean(cfg.enter);
+  autostartSalvo = await invoke("get_autostart");
+  $("autostart").checked = autostartSalvo;
 
   await listen("leitura", (e) => addReading(e.payload));
   await listen("serial-error", (e) => {
-    toast(String(e.payload));
+    alertModal(String(e.payload));
     refreshStatus();
   });
 }
 
-init().catch((e) => toast(String(e)));
+init().catch((e) => alertModal(String(e)));
