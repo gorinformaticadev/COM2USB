@@ -1,5 +1,8 @@
 node_modules/
 src-tauri/target/
+src-tauri/target-instalador/
+installer/dist/
+installer/cache/
 tmp/
 *._rec
 SEALST.INI
