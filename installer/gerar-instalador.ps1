@@ -67,6 +67,17 @@ $setup = Join-Path $installer "dist\COM2USB_$($versao)_setup.exe"
 if (-not (Test-Path $setup)) { throw "instalador nao foi gerado: $setup" }
 $info = Get-Item $setup
 $sha = (Get-FileHash -Algorithm SHA256 $setup).Hash
+
+# 7. Espelho versionado: a pasta release/ do repositorio e o que o GitHub serve
+# por /raw/main/release/<arquivo>. O gerador e deterministico, entao o hash aqui
+# e propriedade do build, nao do momento da compilacao.
+$espelho = Join-Path $raiz 'release'
+if (Test-Path $espelho) {
+    Copy-Item $setup $espelho -Force
+    Copy-Item $Exe (Join-Path $espelho 'COM2USB.exe') -Force
+    Write-Host "==> espelho versionado atualizado: $espelho" -ForegroundColor Cyan
+}
+
 Write-Host ""
 Write-Host "OK: $setup" -ForegroundColor Green
 Write-Host ("   {0:N0} bytes  compilado {1:yyyy-MM-dd HH:mm:ss}" -f $info.Length, $info.LastWriteTime)

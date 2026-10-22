@@ -74,6 +74,13 @@ O instalador é gerado em:
 installer/dist/COM2USB_1.0.0_setup.exe
 ```
 
+e o script copia os dois pacotes (o instalador e o `COM2USB.exe` compilado) para
+`release/`, a pasta versionada que o GitHub serve por `/raw/main/release/`. `installer/dist/`
+é ignorado pelo git; `release/` não — depois de rodar o script, é só dar commit e push
+para os links de download existirem. Como o NSIS é determinístico, empacotar o mesmo
+executável dá o mesmo SHA-256, e os hashes publicados em `RELEASE-NOTES.md` continuam
+valendo.
+
 `npm run build` (o empacotador embutido do Tauri) **não** é o caminho oficial: ele gera um
 instalador genérico em `src-tauri/target/release/bundle/nsis/` sem a opção de driver e sem
 a tarefa de logon elevada. O script acima existe exatamente para empacotar as três coisas
@@ -119,18 +126,20 @@ do operador (`pnputil /enum-drivers` / `pnputil /delete-driver oemNN.inf /uninst
 
 ## Baixar o build pronto
 
-Os binários compilados são anexos da **Release** deste repositório (nada de binário
-dentro da árvore do git). Link permanente para a release mais recente:
+Há dois caminhos para o mesmo arquivo. O preferível é a **Release**, porque vem com as
+notas da versão; o caminho `/raw/` serve o binário direto da árvore do git, na pasta
+versionada `release/`:
 
-| Arquivo | Para quem | Download direto |
-|---|---|---|
-| `COM2USB_1.0.0_setup.exe` (3.729.217 bytes) | instalação normal: programa + atalhos + chaves do Painel de Controle + tarefa de logon elevada, com a opção de driver CH340 **desmarcada** | <https://github.com/gorinformaticadev/com2usb/releases/latest/download/COM2USB_1.0.0_setup.exe> |
-| `COM2USB.exe` (6.685.184 bytes) | portable: um arquivo só, sem instalador, para quem quer só rodar | <https://github.com/gorinformaticadev/com2usb/releases/latest/download/COM2USB.exe> |
+| Arquivo | Para quem | Release (recomendado) | Da árvore do git |
+|---|---|---|---|
+| `COM2USB_1.0.0_setup.exe` (3.729.217 bytes) | instalação normal: programa + atalhos + chaves do Painel de Controle + tarefa de logon elevada, com a opção de driver CH340 **desmarcada** | <https://github.com/gorinformaticadev/COM2USB/releases/latest/download/COM2USB_1.0.0_setup.exe> | <https://github.com/gorinformaticadev/COM2USB/raw/main/release/COM2USB_1.0.0_setup.exe> |
+| `COM2USB.exe` (6.685.184 bytes) | portable: um arquivo só, sem instalador, para quem quer só rodar | <https://github.com/gorinformaticadev/COM2USB/releases/latest/download/COM2USB.exe> | <https://github.com/gorinformaticadev/COM2USB/raw/main/release/COM2USB.exe> |
 
 Página da release (notas, data e histórico das versões):
-<https://github.com/gorinformaticadev/com2usb/releases/latest>.
+<https://github.com/gorinformaticadev/COM2USB/releases/latest>.
 
-SHA-256 dos dois anexos de `v1.0.0`, para conferir depois de baixar:
+SHA-256 dos dois pacotes de `v1.0.0` — os mesmos bytes estão na release e em `release/` —, para
+conferir depois de baixar:
 
 ```
 19EF764ACC346019F9EBA35D4FB9DAD4D53D71816E5841A55DD911522C6BBAE7  COM2USB_1.0.0_setup.exe
@@ -167,8 +176,10 @@ driver/
   confere.ps1        # SHA-256 origem × cópia, somente-leitura
 installer/
   com2usb.nsi        # script NSIS: componentes, opção de driver desmarcada, desinstalador
-  gerar-instalador.ps1  # compila o app e roda o makensis (cache/ e dist/ são ignorados)
+  gerar-instalador.ps1  # compila o app, roda o makensis e renova a pasta release/ (cache/ e dist/ são ignorados)
   sonda-string.ps1   # confere quais recursos estão embutidos num .exe compilado
+release/             # espelho versionado dos binários: é o que /raw/main/release/... serve
+  LEIA-ME.md         # tamanho, SHA-256 e procedência de cada pacote
 gen-icons.js         # gera os ícones a partir de icon-model.png (arte + selo X do estado inativo)
 icon-model.png       # arte-mestre do ícone (código de barras + laser), recortada e quadrada pelo gen-icons.js
 LICENSE              # GPL-3.0
